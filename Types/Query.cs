@@ -1,26 +1,25 @@
-﻿namespace graphQL.Types;
+﻿using graphQL.Data;
+
+namespace graphQL.Types;
 
 public class Query
 {
-    public string Hello()
-    {
-        return "Hello world";
-    }
 
     [GraphQLDescription("Playlists hand-picked to be featured to all users.")]
-    public List<Playlist> FeaturedPlaylists()
+    public async Task<List<Playlist>> FeaturedPlaylists(SpotifyService spotifyService)
     {
-        //     return new List<Playlist> // we can write or use short hand which is below
-        //   {
-        //       new("1", "GraphQL Groovin'"),
-        //       new("2", "Graph Explorer Jams"),
-        //       new("3", "Interpretive GraphQL Dance")
-        //   };
-        return
-      [
-          new("1", "GraphQL Groovin"),
-          new("2", "Graph Explorer Jams"),
-          new("3", "Interpretive GraphQL Dance")
-      ];
+        var response = await spotifyService.GetFeaturedPlaylistsAsync();
+        // var items = response.Playlists.Items;
+        // var playlists = items.Select(item => new Playlist(item));
+        // return playlists.ToList();  // or we can do it in one line
+        return response.Playlists.Items.Select(item => new Playlist(item)).ToList();
+    }
+
+        [GraphQLDescription("Retrieves a specific playlist.")]
+    public async Task<Playlist?> GetPlaylist([ID] string id, SpotifyService spotifyService)
+    {
+        var response = await spotifyService.GetPlaylistAsync(id);
+        var playlist = new Playlist(response);
+        return playlist;
     }
 }

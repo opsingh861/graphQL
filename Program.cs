@@ -1,9 +1,10 @@
 using graphQL.Types;
-
+using graphQL.Data;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpClient<SpotifyService>();
 builder.Services.AddGraphQLServer().AddQueryType<Query>()
-   .AddType<Playlist>();
+   .RegisterService<SpotifyService>();
 
 builder
   .Services
